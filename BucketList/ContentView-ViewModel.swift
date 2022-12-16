@@ -16,6 +16,9 @@ extension ContentView {
         @Published var selectedPlace: Location?
         @Published var isUnlocked = false
         
+        @Published var showingAlert = false
+        @Published var loginErrorMessage: String?
+        
         let savePath = FileManager.documentsDirectory.appendingPathComponent("SavedPlaces")
         
         init() {
@@ -65,11 +68,19 @@ extension ContentView {
                             self.isUnlocked = true
                         }
                     } else {
-                        // error
+                        // Error
+                        Task { @MainActor in
+                            self.showingAlert = true
+                            self.loginErrorMessage = "Could not successfully authenticate with biometrics."
+                        }
                     }
                 }
             } else {
-                // no biometrics
+                // No biometrics
+                Task { @MainActor in
+                    self.showingAlert = true
+                    self.loginErrorMessage = "Sorry, your device does not support biometrics."
+                }
             }
         }
     }

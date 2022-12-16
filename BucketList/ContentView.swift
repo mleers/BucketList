@@ -47,20 +47,21 @@ struct ContentView: View {
                             viewModel.addLocation()
                         } label: {
                             Image(systemName: "plus")
+                                .padding()
+                                .background(.black.opacity(0.75))
+                                .foregroundColor(.white)
+                                .font(.title)
+                                .clipShape(Circle())
+                                .padding(.trailing)
                         }
-                        .padding()
-                        .background(.black.opacity(0.75))
-                        .foregroundColor(.white)
-                        .font(.title)
-                        .clipShape(Circle())
-                        .padding(.trailing)
                     }
                 }
             }
             .sheet(item: $viewModel.selectedPlace) { place in
-                EditView(location: place) { newLocation in
+                EditView() { newLocation in
                     viewModel.update(location: newLocation)
                 }
+                .environmentObject(EditView.ViewModel(location: place))
             }
         } else {
             Button("Unlock Places") {
@@ -70,6 +71,11 @@ struct ContentView: View {
             .background(.blue)
             .foregroundColor(.white)
             .clipShape(Capsule())
+            .alert("Authenticaion failed!", isPresented: $viewModel.showingAlert) {
+                Button("OK") { }
+            } message: {
+                Text(viewModel.loginErrorMessage ?? "Unknown authentication error.")
+            }
         }
     }
 }
